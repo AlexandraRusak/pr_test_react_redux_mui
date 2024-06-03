@@ -1,29 +1,19 @@
-// import {useState} from "react";
-// import {ItemInfo} from "./assets/interfaces/ItemInfo.ts";
-import {Button, Grid, Paper, TextField, Typography} from "@mui/material";
-import {Controller, SubmitHandler, useForm} from "react-hook-form";
-import {DatePicker} from '@mui/x-date-pickers/DatePicker';
-import {LocalizationProvider} from "@mui/x-date-pickers";
-// import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {Alert, Button, Grid, Paper} from "@mui/material";
+import {SubmitHandler, useForm} from "react-hook-form";
+import {useState} from "react";
+import {Spinner} from "./Spinner.tsx";
+import {DateInput} from "./form_components/DateInput.tsx";
+import {TextInput} from "./form_components/TextInput.tsx";
+import {FormValues} from "./form_components/FormValues.tsx";
+import Typography from '@mui/joy/Typography';
+
+
 
 type EmptyFormProps = {
     amendState: () => void;
 }
 
-type FormValues = {
-    companySigDate: Date | null;
-    companySignatureName: string;
-    documentName: string;
-    documentStatus: string;
-    documentType: string;
-    employeeNumber: string;
-    employeeSigDate: Date | null;
-    employeeSignatureName: string;
-}
-
 function EmptyForm(props: EmptyFormProps) {
-    // const baseUrl: string = "https://test.v5.pryaniky.com"
 
     const form = useForm<FormValues>({
         defaultValues: {
@@ -37,140 +27,89 @@ function EmptyForm(props: EmptyFormProps) {
             employeeSignatureName: "",
         }
     })
-    const {register, handleSubmit, formState, control} = form
-    const {errors} = formState;
+    const {handleSubmit, control} = form
+    const [isLoading, setIsLoading] = useState(false);
+    const [alert, setAlert] = useState(false);
+    const [alertContent, setAlertContent] = useState('');
+
 
     const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
-        console.log(data)
-        // const baseUrl: string = "https://test.v5.pryaniky.com"
-        // fetch(baseUrl + `/ru/data/v3/testmethods/docs/userdocs/create`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //         'x-auth': `${sessionStorage.getItem('token')}`
-        //     },
-        //     body: JSON.stringify(data)
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         console.log(data)
-                props.amendState()
-        //     })
-        //     .catch(error => console.log(error))
-        //     .finally(() => {
-        //     });
+        setAlertContent("");
+        setAlert(false);
+        setIsLoading(true);
+        fetch(import.meta.env.VITE_BASE_URL + `/ru/data/v3/testmethods/docs/userdocs/create`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'x-auth': `${sessionStorage.getItem('token')}`
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error_code === 0) {
+                props.amendState()} else {
+                    setAlertContent(data.error_text);
+                    setAlert(true);
+                }
+            })
+            .catch(error => {
+                setAlertContent(error);
+                setAlert(true);
+            })
+            .finally(() => {
+                setIsLoading(false)
+            });
+    }
+
+    if (isLoading) {
+        return (
+            <Spinner/>
+        )
     }
 
 
     return (
-        <Paper>
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                    <Grid container>
-                        <Grid item>
-                            <Typography>Создать новую запись</Typography>
-                        </Grid>
-                        <Grid item>
-                            <Controller
-                                name="companySigDate"
-                                control={control}
-                                rules={{required: "Обязательное поле"}}
-                                render={({field: {onChange, value, ref}, fieldState: {error}}) => (
-                                    <DatePicker
-                                        label="Дата подписания компанией:"
-                                        value={value}
-                                        onChange={onChange}
-                                        inputRef={ref}
-                                        slotProps={{
-                                            textField: {
-                                                error: {error},
-                                            helperText: {error? error.message : null},
-                                        },
-                                        }}
-                                    />
-                                )}
-                            />
-                            {/*<DatePicker label="Дата подписания компанией:" {...register("companySigDate", {required: "Обязательное поле"})}*/}
-                            {/*    // error={!!errors.companySigDate}*/}
-                            {/*    // helperText={errors.companySigDate?.message}*/}
-                            {/*    //     value={companySigDate}*/}
-                            {/*    // onChange={(event) => setCompanySigDate(event.target.value)}*/}
-                        </Grid>
-                        <Grid item>
-                            <TextField id="companySignatureName"
-                                       type="text"
-                                       label="ЭЦП компании:"
-                                       {...register("companySignatureName", {required: "Обязательное поле"})}
-                                       error={!!errors.companySignatureName}
-                                       helperText={errors.companySignatureName?.message}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <TextField id="documentName"
-                                       type="text"
-                                       label="Название документа:"
-                                       {...register("documentName", {required: "Обязательное поле"})}
-                                       error={!!errors.documentName}
-                                       helperText={errors.documentName?.message}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <TextField id="documentStatus"
-                                       type="text"
-                                       label="Статус документа:"
-                                       {...register("documentStatus", {required: "Обязательное поле"})}
-                                       error={!!errors.documentStatus}
-                                       helperText={errors.documentStatus?.message}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <TextField id="documentType"
-                                       type="text"
-                                       label="Тип документа:"
-                                       {...register("documentType", {required: "Обязательное поле"})}
-                                       error={!!errors.documentType}
-                                       helperText={errors.documentType?.message}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <TextField id="employeeNumber"
-                                       type="text"
-                                       label="Номер сотрудника:"
-                                       {...register("employeeNumber", {required: "Обязательное поле"})}
-                                       error={!!errors.employeeNumber}
-                                       helperText={errors.employeeNumber?.message}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <Controller
-                                name={name}
-                                control={control}
-                                render={({field: {onChange, value}}) => (
-                                    <DatePicker
-                                        label="Дата подписания сотрудником:" {...register("employeeSigDate", {required: "Обязательное поле"})}
-                                        // error={!!errors.employeeSigDate}
-                                        // helperText={errors.employeeSigDate?.message}
-                                    />
-                                    </Grid>
-                                    <Grid item>
-                                    <TextField id="employeeSignatureName"
-                                    type="text"
-                                    label="ЭЦП сотрудника:"
-                                {...register("employeeSignatureName", {required: "Обязательное поле"})}
-                                error={!!errors.employeeSignatureName}
-                                helperText={errors.employeeSignatureName?.message}
-                            />
-                        </Grid>
-                        <Grid item>
-                            <Button type="submit" color="primary" variant="contained">Создать</Button>
-                        </Grid>
+        <Paper sx={{padding: "30px 20px",  margin: "20px auto"}}>
+            {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Typography  level="title-lg">Создать новую запись</Typography>
                     </Grid>
-                </form>
-            </LocalizationProvider>
+                    <Grid item xs={6}>
+                        <DateInput name="companySigDate" control={control}
+                                   label="Подписано компанией:"></DateInput>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="companySignatureName" label="ЭЦП компании:" control={control}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="documentName" label="Название документа:" control={control}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="documentStatus" label="Статус документа:" control={control}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="documentType" label="Тип документа:" control={control}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="employeeNumber" label="Номер сотрудника:" control={control}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <DateInput name="employeeSigDate" control={control}
+                                   label="Подписано сотрудником:"></DateInput>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="employeeSignatureName" label="ЭЦП сотрудника:" control={control}/>
+                    </Grid>
+                    <Grid item >
+                        <Button type="submit" color="primary" variant="contained">Создать</Button>
+                    </Grid>
+                </Grid>
+            </form>
         </Paper>
-
     )
-
 }
 
 export {EmptyForm}

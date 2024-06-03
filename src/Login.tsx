@@ -5,10 +5,9 @@ import {useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {useDispatch} from "react-redux";
 import {logIn} from "./store.ts";
-import {Button, Paper, Stack, TextField, Typography, Alert, CircularProgress, Box} from "@mui/material";
-// import {DevTool} from "@hookform/devtools";
+import {Button, Paper, Stack, TextField, Typography, Alert} from "@mui/material";
+import {Spinner} from "./Spinner.tsx";
 
-const baseUrl: string = "https://test.v5.pryaniky.com"
 
 function Login() {
 
@@ -35,20 +34,17 @@ function Login() {
     const onSubmit = (data: FormValues) => {
         setAlertContent("");
         setAlert(false);
-        // console.log(data)
         sessionStorage.setItem("username", data.username)
-        console.log(sessionStorage.getItem("username"))// event.preventDefault()
+        console.log(sessionStorage.getItem("username"))
         setIsLoading(true);
-        fetch(baseUrl + "/ru/data/v3/testmethods/docs/login", {
+        fetch( import.meta.env.VITE_BASE_URL + "/ru/data/v3/testmethods/docs/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)
         })
             .then(response => response.json())
             .then(data => {
-                // console.log(data)
                 if (data.error_code === 0) {
-                    // console.log(data.data.token)
                     dispatch(logIn())
                     sessionStorage.setItem("token", data.data.token)
                     navigate("/data-list")
@@ -58,7 +54,6 @@ function Login() {
                 }
             })
             .catch(error => {
-                // console.log(error)
                 sessionStorage.clear()
                 setAlertContent(error);
                 setAlert(true);
@@ -70,9 +65,7 @@ function Login() {
 
     if (isLoading) {
         return    (
-            <Box sx={{ display: 'flex' }}>
-                <CircularProgress />
-            </Box>
+           <Spinner />
         )
     }
 
@@ -101,12 +94,11 @@ function Login() {
                         <Button variant="contained" color="primary" type="submit">Войти</Button>
                     </Stack>
                 </form>
-                {/*<DevTool control={control}/>*/}
             </Paper>
         )
     } else {
         return (
-            <Paper elevation={20} sx={{padding: "30px 20px", width: 300, margin: "20px auto"}}>
+            <Paper sx={{padding: "30px 20px", width: 300, margin: "20px auto"}}>
                 <Stack spacing={2}>
                     <Typography>Данные пользователя</Typography>
                     <Typography>username: {sessionStorage.getItem("username")}</Typography>

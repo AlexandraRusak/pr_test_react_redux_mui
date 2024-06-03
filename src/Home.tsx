@@ -1,26 +1,22 @@
-// import {useSelector} from "react-redux";
-// import {useNavigate} from "react-router-dom";
-// import {IRootState} from "./store.ts";
-// import {useEffect} from "react";
+import Typography from '@mui/joy/Typography';
+import {Link, Paper, Stack} from "@mui/material";
+import {useSelector} from "react-redux";
+import {IRootState} from "./store.ts";
+import {Link as RouterLink} from "react-router-dom";
 
-function Home () {
+function Home() {
 
-    // const state = useSelector((state: IRootState) => state.loggedIn)
-    // const navigate = useNavigate();
-    //
-    // useEffect(() => {
-    //     if (!state) {
-    //               navigate("/login")
-    //     }
-    // });
+    const state = useSelector((state: IRootState) => state.loggedIn)
+
 
     return (
-        <>
-            <h1>Описание приложения</h1>
-            <p>Для использования приложения необходимо войти в профиль.</p>
-
-        </>
-
+        <Paper sx={{padding: "30px 20px",  margin: "20px auto"}}>
+            <Stack spacing={2}>
+                <Typography level="title-lg">Описание приложения</Typography>
+                <Typography>Здесь должно быть описание приложения.</Typography>
+                {!state ? <Typography>Для использования приложения необходимо <Link component={RouterLink} to="/login" color="inherit">войти</Link> в профиль.</Typography> : <></>}
+            </Stack>
+        </Paper>
     )
 
 }

@@ -1,72 +1,97 @@
-// import {useForm} from "react-hook-form"
 import {useState} from "react";
-import {ItemInfo} from "./assets/interfaces/ItemInfo.ts";
+// import {ItemInfo} from "./assets/interfaces/ItemInfo.ts";
+import {Alert, Button, Grid, IconButton, Paper} from "@mui/material";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {SubmitHandler, useForm} from "react-hook-form";
+import {FormValues} from "./form_components/FormValues.tsx";
+import {DateInput} from "./form_components/DateInput.tsx";
+import {TextInput} from "./form_components/TextInput.tsx";
+import {Spinner} from "./Spinner.tsx";
+// import dayjs from 'dayjs';
+
 
 type FormProps = {
     amendState: () => void;
-    item: {
-        id: string;
-        companySigDate: string;
-        companySignatureName: string;
-        documentName: string;
-        documentStatus: string;
-        documentType: string;
-        employeeNumber: string;
-        employeeSigDate: string;
-        employeeSignatureName: string;
-    }
+    item: FormValues;
+    //     {
+    //     id: string;
+    //     companySigDate: string;
+    //     companySignatureName: string;
+    //     documentName: string;
+    //     documentStatus: string;
+    //     documentType: string;
+    //     employeeNumber: string;
+    //     employeeSigDate: string;
+    //     employeeSignatureName: string;
+    // }
+
 }
 
 
 function Form(props: FormProps) {
 
-    const [isDisabled, setIsDisabled] = useState(true)
-    const [companySigDate, setCompanySigDate] = useState(props.item.companySigDate.substring(0, 10));
-    const [companySignatureName, setCompanySignatureName] = useState(props.item.companySignatureName);
-    const [documentName, setDocumentName] = useState(props.item.documentName);
-    const [documentStatus, setDocumentStatus] = useState(props.item.documentStatus);
-    const [documentType, setDocumentType] = useState(props.item.documentType);
-    const [employeeNumber, setEmployeeNumber] = useState(props.item.employeeNumber);
-    const [employeeSigDate, setEmployeeSigDate] = useState(props.item.employeeSigDate.substring(0, 10));
-    const [employeeSignatureName, setEmployeeSignatureName] = useState(props.item.employeeSignatureName)
+    // const {id, ...rest} = props.item
+    const cSDate: string = `${props.item.companySigDate}`.substring(0, 10)
+    const eSDate: string = `${props.item.employeeSigDate}`.substring(0, 10)
 
-
-    const baseUrl: string = "https://test.v5.pryaniky.com"
-
-    const postFetcher = (url: string, id: string) => {
-        const body: ItemInfo = {
-            companySigDate: new Date(companySigDate).toISOString(),
-            companySignatureName: companySignatureName,
-            documentName: documentName,
-            documentStatus: documentStatus,
-            documentType: documentType,
-            employeeNumber: employeeNumber,
-            employeeSigDate: new Date(employeeSigDate).toISOString(),
-            employeeSignatureName: employeeSignatureName
+    const form = useForm<FormValues>({
+        defaultValues: {
+            id: props.item.id,
+            companySigDate: new Date(cSDate),
+            companySignatureName: props.item.companySignatureName,
+            documentName: props.item.documentName,
+            documentStatus: props.item.documentStatus,
+            documentType: props.item.documentType,
+            employeeNumber: props.item.employeeNumber,
+            employeeSigDate: new Date(eSDate),
+            employeeSignatureName: props.item.employeeSignatureName
         }
 
-        console.log(body)
-        fetch(baseUrl + `/ru/data/v3/testmethods/docs/userdocs/${url}/${id}`, {
+    })
+
+    const {register, handleSubmit, control} = form
+    const [alert, setAlert] = useState(false);
+    const [alertContent, setAlertContent] = useState('');
+    const [isDisabled, setIsDisabled] = useState(true)
+    const [isLoading, setIsLoading] = useState(false);
+
+
+    const postFetcher = (data: FormValues, url: string) => {
+        const {id, ...rest} = data
+        setAlertContent("");
+        setAlert(false);
+        setIsLoading(true);
+        fetch(import.meta.env.VITE_BASE_URL + `/ru/data/v3/testmethods/docs/userdocs/${url}/${id}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 'x-auth': `${sessionStorage.getItem('token')}`
             },
-            body: JSON.stringify({...body})
+            body: JSON.stringify(rest)
         })
             .then(response => response.json())
             .then(data => {
                 console.log(data)
-                props.amendState()
+                if (data.error_code === 0) {
+                    props.amendState()
+                } else {
+                    setAlertContent(data.error_text);
+                    setAlert(true);
+                }
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                setAlertContent(error);
+                setAlert(true);
+            })
             .finally(() => {
+                setIsLoading(false)
             });
     }
 
-    function handleDeleteButton(event: React.FormEvent) {
-        event.preventDefault()
-        postFetcher("delete", event.currentTarget.id)
+    const onDelete: SubmitHandler<FormValues> = (data: FormValues) => {
+        console.log(data)
+        postFetcher(data, "delete")
     }
 
     function handleEditButton(event: React.FormEvent) {
@@ -74,42 +99,62 @@ function Form(props: FormProps) {
         setIsDisabled(false);
     }
 
-    function handleSubmitButton(event: React.FormEvent) {
-        event.preventDefault()
-        postFetcher("set", event.currentTarget.id)
+    const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+        postFetcher(data, "set")
     }
 
+    if (isLoading) {
+        return (
+            <Spinner/>
+        )
+    }
 
     return (
-        <form id={props.item.id}>
-            <label htmlFor="companySigDate">Дата подписания компанией:</label>
-            <input id="companySigDate" type="date" value={companySigDate}
-                   onChange={(event) => setCompanySigDate(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="companySignatureName">ЭЦП компании:</label>
-            <input id="companySignatureName" type="text" value={companySignatureName}
-                   onChange={(event) => setCompanySignatureName(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="documentName">Название документа</label>
-            <input id="documentName" type="text" value={documentName}
-                   onChange={(event) => setDocumentName(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="documentStatus">Статус документа:</label>
-            <input id="documentStatus" type="text" value={documentStatus}
-                   onChange={(event) => setDocumentStatus(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="documentType">Тип документа:</label>
-            <input id="documentType" type="text" value={documentType}
-                   onChange={(event) => setDocumentType(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="employeeNumber">Номер сотрудника</label>
-            <input id="employeeNumber" type="text" value={employeeNumber}
-                   onChange={(event) => setEmployeeNumber(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="employeeSigDate">Дата подписания сотрудником:</label>
-            <input id="employeeSigDate" type="date" value={employeeSigDate}
-                   onChange={(event) => setEmployeeSigDate(event.target.value)} disabled={isDisabled}/>
-            <label htmlFor="employeeSignatureName">ЭЦП сотрудника:</label>
-            <input id="employeeSignatureName" type="text" value={employeeSignatureName}
-                   onChange={(event) => setEmployeeSignatureName(event.target.value)} disabled={isDisabled}/>
-            {isDisabled ? "" : <button id={props.item.id} onClick={handleSubmitButton}>Сохранить изменения</button>}
-            <button id={props.item.id} onClick={handleDeleteButton}>Удалить</button>
-            <button onClick={handleEditButton}>Редактировать</button>
-        </form>
+        <Paper sx={{padding: "30px 20px", margin: "20px auto"}}>
+            {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
+            <form noValidate>
+                <Grid container spacing={2}>
+                    <input id="id" {...register("id", {value: "data"})} type="hidden"/>
+                    <Grid item xs={6}>
+                        <DateInput name="companySigDate" label="Дата подписания компанией:" control={control}
+                                   disabled={isDisabled}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="companySignatureName" label="ЭЦП компании:" control={control}
+                                   disabled={isDisabled}/>
+
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="documentName" label="Название документа:" control={control}
+                                   disabled={isDisabled}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="documentStatus" label="Статус документа:" control={control}
+                                   disabled={isDisabled}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="documentType" label="Тип документа:" control={control} disabled={isDisabled}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="employeeNumber" label="Номер сотрудника:" control={control}
+                                   disabled={isDisabled}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <DateInput name="employeeSigDate" label="Дата подписания сотрудником:" control={control}
+                                   disabled={isDisabled}/>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextInput name="employeeSignatureName" label="ЭЦП сотрудника:" control={control}
+                                   disabled={isDisabled}/>
+                    </Grid>
+                </Grid>
+            </form>
+            {isDisabled ? "" :
+                <Button onClick={handleSubmit(onSubmit)} variant="contained" color="primary" id={props.item.id}>Сохранить
+                    изменения</Button>}
+            <IconButton onClick={handleSubmit(onDelete)} aria-label="удалить"><DeleteIcon/></IconButton>
+            <IconButton onClick={handleEditButton} aria-label="редактировать"><EditIcon/></IconButton>
+        </Paper>
     )
 }
 

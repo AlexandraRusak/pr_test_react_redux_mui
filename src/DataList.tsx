@@ -2,11 +2,10 @@ import {useSelector} from "react-redux";
 import {IRootState} from "./store.ts";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useReducer, useState} from "react";
-import {Spinner} from "./Spinner.tsx";
 import {Form} from "./Form.tsx";
-// import {ItemInfo} from "./assets/interfaces/ItemInfo.ts";
-import {Info} from "./assets/interfaces/Info.ts";
 import {EmptyForm} from "./EmptyForm.tsx";
+import {Spinner} from "./Spinner.tsx";
+import {FormValues} from "./form_components/FormValues.tsx";
 
 
 function DataList() {
@@ -14,13 +13,9 @@ function DataList() {
 
     const state = useSelector((state: IRootState) => state.loggedIn)
     const [isLoading, setIsLoading] = useState(false);
-    const [info, setInfo] = useState<Info[]>([])
+    const [info, setInfo] = useState<FormValues[]>([])
     const navigate = useNavigate();
-
-    const [reducerValue, forceUpdate] = useReducer(x => x+1, 0)
-
-    const baseUrl = 'https://test.v5.pryaniky.com'
-
+    const [reducerValue, forceUpdate] = useReducer(x => x + 1, 0)
 
 
     useEffect(() => {
@@ -31,7 +26,7 @@ function DataList() {
 
     useEffect(() => {
         setIsLoading(true);
-        fetch(baseUrl + "/ru/data/v3/testmethods/docs/userdocs/get", {
+        fetch(import.meta.env.VITE_BASE_URL + "/ru/data/v3/testmethods/docs/userdocs/get", {
             method: "GET",
             headers: {'x-auth': `${sessionStorage.getItem('token')}`}
         })
@@ -49,22 +44,22 @@ function DataList() {
     }, [reducerValue]);
 
 
-function amendState() {
-  forceUpdate()
-}
-
-
-
+    function amendState() {
+        forceUpdate()
+    }
 
     if (isLoading) {
-        return <Spinner/>
+        return (
+            <Spinner/>
+        )
     }
-    return (<>
-            <EmptyForm amendState={()=>amendState()}/>
-            {
-                info.map((item: Info) => <Form key={item.id} item={item} amendState={()=>amendState()}/>)
-            }
 
+    return (
+        <>
+            <EmptyForm amendState={() => amendState()}/>
+            {
+                info.map((item: FormValues) => <Form key={item.id} item={item} amendState={() => amendState()}/>)
+            }
         </>
     )
 }
