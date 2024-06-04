@@ -14,7 +14,7 @@ function Home() {
             <Stack spacing={2}>
                 <Typography level="title-lg">Описание приложения</Typography>
                 <Typography>Здесь должно быть описание приложения.</Typography>
-                {!state ? <Typography>Для использования приложения необходимо <Link component={RouterLink} to="/login" color="inherit">войти</Link> в профиль.</Typography> : <></>}
+                {!state ? <Typography>Для использования приложения необходимо <Link component={RouterLink} to={`${import.meta.env.VITE_URL_PREFIX}/login`} color="inherit">войти</Link> в профиль.</Typography> : <></>}
             </Stack>
         </Paper>
     )
