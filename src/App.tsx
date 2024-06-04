@@ -7,17 +7,18 @@ import {Login} from "./Login.tsx";
 import {Container} from "@mui/material";
 
 function App() {
-
+    const url_prefix = import.meta.env.VITE_URL_PREFIX
     return (
         <>
             <Navbar/>
             <Container>
                 <Routes>
-                    <Route path="/" element={<Home/>}></Route>
-                    <Route path="/data-list" element={<DataList/>}></Route>
-                    <Route path="/login" element={<Login/>}></Route>
+                    <Route path={ url_prefix + "/"} element={<Home/>}></Route>
+                    <Route path={ url_prefix + "/data-list"} element={<DataList/>}></Route>
+                    <Route path={ url_prefix + "/login"} element={<Login/>}></Route>
                 </Routes>
             </Container>
+
         </>
       )
 }

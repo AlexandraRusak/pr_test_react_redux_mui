@@ -19,23 +19,23 @@ function Navbar() {
     function handleLogOutButton(event: React.FormEvent) {
         event.preventDefault()
         dispatch(logOut())
-        navigate("/")
+        navigate("/pr_test_react_redux_mui/")
     }
 
     function handleLogInButton(event: React.FormEvent) {
         event.preventDefault()
-        navigate("/login")
+        navigate("/pr_test_react_redux_mui/login")
     }
 
 
     return (
         <AppBar position="static">
             <Toolbar>
-                <IconButton component={RouterLink} to="/login" color="inherit"
+                <IconButton component={RouterLink} to={`${import.meta.env.VITE_URL_PREFIX}/login`} color="inherit"
                             aria-label="profile"><PersonIcon/></IconButton>
                 <Typography sx={{flexGrow: 1}}>PRYANIKY</Typography>
-                <Button component={RouterLink} to="/" color="inherit">Главная</Button>
-                <Button component={RouterLink} to="/data-list" color="inherit">Данные</Button>
+                <Button component={RouterLink} to={`${import.meta.env.VITE_URL_PREFIX}/`} color="inherit">Главная</Button>
+                <Button component={RouterLink} to={`${import.meta.env.VITE_URL_PREFIX}/data-list`} color="inherit">Данные</Button>
                 {state ? <IconButton color="inherit" onClick={handleLogOutButton}
                                      aria-label="logout"><LogoutIcon/></IconButton> :
                     <IconButton color="inherit" onClick={handleLogInButton}

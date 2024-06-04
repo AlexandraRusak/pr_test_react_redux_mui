@@ -20,13 +20,13 @@ function DataList() {
 
     useEffect(() => {
         if (!state) {
-            navigate("/login")
+            navigate(`${import.meta.env.VITE_URL_PREFIX}/login`)
         }
     });
 
     useEffect(() => {
         setIsLoading(true);
-        fetch(import.meta.env.VITE_BASE_URL + "/ru/data/v3/testmethods/docs/userdocs/get", {
+        fetch(import.meta.env.VITE_BACKEND_URL + "/ru/data/v3/testmethods/docs/userdocs/get", {
             method: "GET",
             headers: {'x-auth': `${sessionStorage.getItem('token')}`}
         })

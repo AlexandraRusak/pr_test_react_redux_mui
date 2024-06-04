@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: 'https://alexandrarusak.github.io/pr_test_react_redux_mui/',
+  base: `/pr_test_react_redux_mui/`
 })

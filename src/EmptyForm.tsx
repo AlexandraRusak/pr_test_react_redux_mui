@@ -37,7 +37,7 @@ function EmptyForm(props: EmptyFormProps) {
         setAlertContent("");
         setAlert(false);
         setIsLoading(true);
-        fetch(import.meta.env.VITE_BASE_URL + `/ru/data/v3/testmethods/docs/userdocs/create`, {
+        fetch(import.meta.env.VITE_BACKEND_URL + `/ru/data/v3/testmethods/docs/userdocs/create`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

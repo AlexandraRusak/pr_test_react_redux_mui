@@ -37,7 +37,7 @@ function Login() {
         sessionStorage.setItem("username", data.username)
         console.log(sessionStorage.getItem("username"))
         setIsLoading(true);
-        fetch( import.meta.env.VITE_BASE_URL + "/ru/data/v3/testmethods/docs/login", {
+        fetch( import.meta.env.VITE_BACKEND_URL + "/ru/data/v3/testmethods/docs/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)
@@ -47,7 +47,7 @@ function Login() {
                 if (data.error_code === 0) {
                     dispatch(logIn())
                     sessionStorage.setItem("token", data.data.token)
-                    navigate("/data-list")
+                    navigate("/pr_test_react_redux_mui/data-list")
                 } else {
                     setAlertContent(data.error_text);
                     setAlert(true);
