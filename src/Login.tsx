@@ -47,7 +47,7 @@ function Login() {
                 if (data.error_code === 0) {
                     dispatch(logIn())
                     sessionStorage.setItem("token", data.data.token)
-                    navigate("/data-list")
+                    navigate("/pr_test_react_redux_mui/data-list")
                 } else {
                     setAlertContent(data.error_text);
                     setAlert(true);

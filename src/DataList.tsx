@@ -20,7 +20,7 @@ function DataList() {
 
     useEffect(() => {
         if (!state) {
-            navigate("/login")
+            navigate(`${import.meta.env.VITE_URL_PREFIX}/login`)
         }
     });
 
