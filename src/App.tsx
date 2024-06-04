@@ -7,7 +7,6 @@ import {Login} from "./Login.tsx";
 import {Container} from "@mui/material";
 
 function App() {
-
     return (
         <>
             <Navbar/>
@@ -18,6 +17,7 @@ function App() {
                     <Route path="/login" element={<Login/>}></Route>
                 </Routes>
             </Container>
+
         </>
       )
 }
