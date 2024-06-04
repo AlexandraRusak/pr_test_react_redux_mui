@@ -26,6 +26,11 @@ const DateInput = ({ name, control, label, disabled }: FormInputProps) => {
                                 helperText: error ? error.message : null,
                             },
                         }}
+                        sx={{
+                            "& .MuiInputBase-input.Mui-disabled": {
+                                WebkitTextFillColor: "#000000",
+                            },
+                        }}
                     />
                 )}
             />

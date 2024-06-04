@@ -21,6 +21,11 @@ const TextInput = ({name, control, label, disabled}: FormInputProps) => {
                     label={label}
                     disabled={disabled}
                     variant="outlined"
+                    sx={{
+                        "& .MuiInputBase-input.Mui-disabled": {
+                            WebkitTextFillColor: "#000000",
+                        },
+                    }}
                 />
             )}
         />
