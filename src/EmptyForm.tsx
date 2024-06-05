@@ -71,6 +71,7 @@ function EmptyForm(props: EmptyFormProps) {
 
     return (
         <div style={{margin: "20px auto"}}>
+            {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
             <Accordion>
                 <AccordionSummary
                     expandIcon={<ArrowDownwardIcon/>}
@@ -80,7 +81,6 @@ function EmptyForm(props: EmptyFormProps) {
                     <Typography level="title-lg">Создать новую запись</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    {alert ? <Alert severity="error">{alertContent}</Alert> : <></>}
                     <form onSubmit={handleSubmit(onSubmit)} noValidate>
                         <Grid container spacing={2}>
                             <Grid item xs={6}>

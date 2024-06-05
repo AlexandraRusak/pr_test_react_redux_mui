@@ -42,8 +42,15 @@ function Login() {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(data)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // 4xx or 5xx error
+                    // console.log("there is error")
+                    throw new Error("Данные не могут быть загружены.");
+                }
+                return response.json()})
             .then(data => {
+                // console.log(data)
                 if (data.error_code === 0) {
                     dispatch(logIn())
                     sessionStorage.setItem("token", data.data.token)
