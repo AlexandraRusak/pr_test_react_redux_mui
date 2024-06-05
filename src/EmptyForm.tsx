@@ -35,11 +35,6 @@ function EmptyForm(props: EmptyFormProps) {
 
     const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
         console.log(data)
-        // const {companySigDate, employeeSigDate} = data
-        // const dCompanySigDate = new Date(companySigDate).toISOString()
-        // console.log(dCompanySigDate)
-        // const dEmployeeSigDate = employeeSigDate?.toISOString()
-        // console.log(dEmployeeSigDate)
         setAlertContent("");
         setAlert(false);
         setIsLoading(true);
@@ -51,7 +46,13 @@ function EmptyForm(props: EmptyFormProps) {
             },
             body: JSON.stringify(data)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // 4xx or 5xx error
+                    console.log("there is error")
+                    throw new Error("Данные не могут быть загружены.");
+                }
+                return response.json()})
             .then(data => {
                 if (data.error_code === 0) {
                     props.amendState()

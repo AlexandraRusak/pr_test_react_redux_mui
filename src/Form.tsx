@@ -65,6 +65,7 @@ function Form(props: FormProps) {
     };
 
     const postFetcher = (data: FormValues, url: string) => {
+        console.log("fetching")
         const {id, ...rest} = data
         setAlertContent("");
         setAlert(false);
@@ -77,8 +78,15 @@ function Form(props: FormProps) {
             },
             body: JSON.stringify(rest)
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    // 4xx or 5xx error
+                    // console.log("there is error")
+                    throw new Error("Данные не могут быть загружены.");
+                }
+                return response.json()})
             .then(data => {
+                console.log(data)
                 if (data.error_code === 0) {
                     props.amendState()
                 } else {
