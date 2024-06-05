@@ -35,7 +35,6 @@ function Login() {
         setAlertContent("");
         setAlert(false);
         sessionStorage.setItem("username", data.username)
-        console.log(sessionStorage.getItem("username"))
         setIsLoading(true);
         fetch( import.meta.env.VITE_BACKEND_URL + "/ru/data/v3/testmethods/docs/login", {
             method: "POST",
@@ -44,13 +43,10 @@ function Login() {
         })
             .then(response => {
                 if (!response.ok) {
-                    // 4xx or 5xx error
-                    // console.log("there is error")
                     throw new Error("Данные не могут быть загружены.");
                 }
                 return response.json()})
             .then(data => {
-                // console.log(data)
                 if (data.error_code === 0) {
                     dispatch(logIn())
                     sessionStorage.setItem("token", data.data.token)

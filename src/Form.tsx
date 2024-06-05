@@ -53,11 +53,8 @@ function Form(props: FormProps) {
     })
 
     const {register, handleSubmit, control} = form
-
     const [isDisabled, setIsDisabled] = useState(true)
     const [isLoading, setIsLoading] = useState(false);
-
-
     const [open, setOpen] = useState(false);
 
     const handleClose = () => {
@@ -65,7 +62,6 @@ function Form(props: FormProps) {
     };
 
     const postFetcher = (data: FormValues, url: string) => {
-        console.log("fetching")
         const {id, ...rest} = data
         setAlertContent("");
         setAlert(false);
@@ -80,13 +76,10 @@ function Form(props: FormProps) {
         })
             .then(response => {
                 if (!response.ok) {
-                    // 4xx or 5xx error
-                    // console.log("there is error")
                     throw new Error("Данные не могут быть загружены.");
                 }
                 return response.json()})
             .then(data => {
-                console.log(data)
                 if (data.error_code === 0) {
                     props.amendState()
                 } else {

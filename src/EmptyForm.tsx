@@ -34,7 +34,6 @@ function EmptyForm(props: EmptyFormProps) {
 
 
     const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
-        console.log(data)
         setAlertContent("");
         setAlert(false);
         setIsLoading(true);
@@ -48,8 +47,6 @@ function EmptyForm(props: EmptyFormProps) {
         })
             .then(response => {
                 if (!response.ok) {
-                    // 4xx or 5xx error
-                    console.log("there is error")
                     throw new Error("Данные не могут быть загружены.");
                 }
                 return response.json()})
