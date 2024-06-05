@@ -26,26 +26,34 @@ type FormProps = {
 
 function Form(props: FormProps) {
 
-    const cSDate: string = `${props.item.companySigDate}`.substring(0, 10)
-    const eSDate: string = `${props.item.employeeSigDate}`.substring(0, 10)
+    const [alert, setAlert] = useState(false);
+    const [alertContent, setAlertContent] = useState('');
+
+    function convertIsoToLocal(isoString: string): string {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) {
+            setAlert(true)
+            setAlertContent('Неверный формат даты');
+        }
+        return date.toLocaleDateString();
+    }
 
     const form = useForm<FormValues>({
         defaultValues: {
             id: props.item.id,
-            companySigDate: new Date(cSDate),
+            companySigDate: new Date(convertIsoToLocal(`${props.item.companySigDate}`)),
             companySignatureName: props.item.companySignatureName,
             documentName: props.item.documentName,
             documentStatus: props.item.documentStatus,
             documentType: props.item.documentType,
             employeeNumber: props.item.employeeNumber,
-            employeeSigDate: new Date(eSDate),
+            employeeSigDate: new Date(convertIsoToLocal(`${props.item.employeeSigDate}`)),
             employeeSignatureName: props.item.employeeSignatureName
         }
     })
 
     const {register, handleSubmit, control} = form
-    const [alert, setAlert] = useState(false);
-    const [alertContent, setAlertContent] = useState('');
+
     const [isDisabled, setIsDisabled] = useState(true)
     const [isLoading, setIsLoading] = useState(false);
 
@@ -55,7 +63,6 @@ function Form(props: FormProps) {
     const handleClose = () => {
         setOpen(false);
     };
-
 
     const postFetcher = (data: FormValues, url: string) => {
         const {id, ...rest} = data

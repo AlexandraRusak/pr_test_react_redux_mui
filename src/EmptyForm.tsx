@@ -34,6 +34,12 @@ function EmptyForm(props: EmptyFormProps) {
 
 
     const onSubmit: SubmitHandler<FormValues> = (data: FormValues) => {
+        console.log(data)
+        // const {companySigDate, employeeSigDate} = data
+        // const dCompanySigDate = new Date(companySigDate).toISOString()
+        // console.log(dCompanySigDate)
+        // const dEmployeeSigDate = employeeSigDate?.toISOString()
+        // console.log(dEmployeeSigDate)
         setAlertContent("");
         setAlert(false);
         setIsLoading(true);
